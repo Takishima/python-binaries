@@ -1,0 +1,338 @@
+name: "Build wheels"
+
+on:
+  workflow_dispatch
+
+jobs:
+  # ============================================================================
+  # Numpy
+
+  numpy-1-17-5:
+    name: "numpy 1.17.5 ${{ matrix.cibw_build }}"
+    runs-on: ubuntu-latest
+    env:
+      PKG_NAME: "numpy"
+      PKG_VERSION: "1.17.5"
+      PKG_HASH: "d9/09/8e89c05abc450ea347f40b4fa917ec5c69b5228da344487f178586a3187c"
+      PKG_EXT: "zip"
+      CIBW_ARCHS: "auto64"
+    strategy:
+      matrix:
+        cibw_build: ['cp36-musllinux', 'cp37-musllinux', 'cp38-musllinux', 'cp39-musllinux', 'pp37', 'pp38']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+
+      - uses: actions/cache@v2
+        id: package-cache
+        with:
+          path: package-cache
+          key: cache-${{ env.PKG_NAME }}-${{ env.PKG_VERSION }}-${{ matrix.cibw_build }}
+
+      - name: Build ${{ matrix.package-name }} ${{ matrix.package-version }}
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        run: bash scripts/download_archive.bash $PKG_NAME $PKG_VERSION $PKG_EXT $PKG_HASH
+
+      - name: Install pipx
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        run: |
+          python3 -m pip install -U pipx
+          python3 -m pipx ensurepath
+
+      - name: Build wheels
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        uses: pypa/cibuildwheel@v2.3.1
+        with:
+          package-dir: ${{ env.PKG_NAME }}-${{ env.PKG_VERSION }}
+          output-dir: package-cache
+        env:
+          CIBW_BUILD: ${{ matrix.cibw_build }}*
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: ./package-cache/*
+
+  numpy-1-21-5:
+    name: "numpy 1.21.5 ${{ matrix.cibw_build }}"
+    runs-on: ubuntu-latest
+    env:
+      PKG_NAME: "numpy"
+      PKG_VERSION: "1.21.5"
+      PKG_HASH: "c2/a8/a924a09492bdfee8c2ec3094d0a13f2799800b4fdc9c890738aeeb12c72e"
+      PKG_EXT: "zip"
+    strategy:
+      matrix:
+        cibw_build: ['cp310-musllinux']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+
+      - uses: actions/cache@v2
+        id: package-cache
+        with:
+          path: package-cache
+          key: cache-${{ env.PKG_NAME }}-${{ env.PKG_VERSION }}-${{ matrix.cibw_build }}
+
+      - name: Build ${{ matrix.package-name }} ${{ matrix.package-version }}
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        run: bash scripts/download_archive.bash $PKG_NAME $PKG_VERSION $PKG_EXT $PKG_HASH
+
+      - name: Install pipx
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        run: |
+          python3 -m pip install -U pipx
+          python3 -m pipx ensurepath
+
+      - name: Build wheels
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        uses: pypa/cibuildwheel@v2.3.1
+        with:
+          package-dir: ${{ env.PKG_NAME }}-${{ env.PKG_VERSION }}
+          output-dir: package-cache
+        env:
+          CIBW_BUILD: ${{ matrix.cibw_build }}*
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: ./package-cache/*
+
+  # ============================================================================
+  # Matplotlib
+
+  matplotlib-3-3-4:
+    name: "matplotlib 3.3.4 ${{ matrix.cibw_build }}"
+    runs-on: ubuntu-latest
+    env:
+      PKG_NAME: "matplotlib"
+      PKG_VERSION: "3.3.4"
+      PKG_HASH: "22/d4/e7ca532e68a9357742604e1e4ae35d9c09a4a810de39a9d80402bd12f50f"
+      PKG_EXT: "tar.gz"
+      CIBW_ARCHS: "auto64"
+    strategy:
+      matrix:
+        cibw_build: ['cp36-musllinux']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+
+      - uses: actions/cache@v2
+        id: package-cache
+        with:
+          path: package-cache
+          key: cache-${{ env.PKG_NAME }}-${{ env.PKG_VERSION }}-${{ matrix.cibw_build }}
+
+      - name: Build ${{ matrix.package-name }} ${{ matrix.package-version }}
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        run: bash scripts/download_archive.bash $PKG_NAME $PKG_VERSION $PKG_EXT $PKG_HASH
+
+      - name: Install pipx
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        run: |
+          python3 -m pip install -U pipx
+          python3 -m pipx ensurepath
+
+      - name: Build wheels
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        uses: pypa/cibuildwheel@v2.3.1
+        with:
+          package-dir: ${{ env.PKG_NAME }}-${{ env.PKG_VERSION }}
+          output-dir: package-cache
+        env:
+          CIBW_BUILD: ${{ matrix.cibw_build }}*
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: ./package-cache/*
+
+  matplotlib-3-5-1:
+    name: "matplotlib 3.5.1 ${{ matrix.cibw_build }}"
+    runs-on: ubuntu-latest
+    env:
+      PKG_NAME: "matplotlib"
+      PKG_VERSION: "3.5.1"
+      PKG_HASH: "8a/46/425a44ab9a71afd2f2c8a78b039c1af8ec21e370047f0ad6e43ca819788e"
+      PKG_EXT: "tar.gz"
+      CIBW_ARCHS: "auto64"
+    strategy:
+      matrix:
+        cibw_build: ['cp37-musllinux', 'cp38-musllinux', 'cp39-musllinux', 'pp37', 'pp38']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+
+      - uses: actions/cache@v2
+        id: package-cache
+        with:
+          path: package-cache
+          key: cache-${{ env.PKG_NAME }}-${{ env.PKG_VERSION }}-${{ matrix.cibw_build }}
+
+      - name: Build ${{ matrix.package-name }} ${{ matrix.package-version }}
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        run: bash scripts/download_archive.bash $PKG_NAME $PKG_VERSION $PKG_EXT $PKG_HASH
+
+      - name: Install pipx
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        run: |
+          python3 -m pip install -U pipx
+          python3 -m pipx ensurepath
+
+      - name: Build wheels
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        uses: pypa/cibuildwheel@v2.3.1
+        with:
+          package-dir: ${{ env.PKG_NAME }}-${{ env.PKG_VERSION }}
+          output-dir: package-cache
+        env:
+          CIBW_BUILD: ${{ matrix.cibw_build }}*
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: ./package-cache/*
+
+  # ============================================================================
+  # Scipy
+
+  scipy-1-5-4:
+    name: "scipy 1.5.4 ${{ matrix.cibw_build }}"
+    runs-on: ubuntu-latest
+    env:
+      PKG_NAME: "scipy"
+      PKG_VERSION: "1.5.4"
+      PKG_HASH: "aa/d5/dd06fe0e274e579e1dff21aa021219c039df40e39709fabe559faed072a5"
+      PKG_EXT: "tar.gz"
+      CIBW_ARCHS: "auto64"
+      CIBW_BEFORE_ALL: "apk update && apk add lapack-dev blas-dev"
+    strategy:
+      matrix:
+        cibw_build: ['cp36-musllinux']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+
+      - uses: actions/cache@v2
+        id: package-cache
+        with:
+          path: package-cache
+          key: cache-${{ env.PKG_NAME }}-${{ env.PKG_VERSION }}-${{ matrix.cibw_build }}
+
+      - name: Build ${{ matrix.package-name }} ${{ matrix.package-version }}
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        run: bash scripts/download_archive.bash $PKG_NAME $PKG_VERSION $PKG_EXT $PKG_HASH
+
+      - name: Install pipx
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        run: |
+          python3 -m pip install -U pipx
+          python3 -m pipx ensurepath
+
+      - name: Build wheels
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        uses: pypa/cibuildwheel@v2.3.1
+        with:
+          package-dir: ${{ env.PKG_NAME }}-${{ env.PKG_VERSION }}
+          output-dir: package-cache
+        env:
+          CIBW_BUILD: ${{ matrix.cibw_build }}*
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: ./package-cache/*
+
+  scipy-1-7-3-musl:
+    name: "scipy 1.7.3 ${{ matrix.cibw_build }}"
+    runs-on: ubuntu-latest
+    env:
+      PKG_NAME: "scipy"
+      PKG_VERSION: "1.7.3"
+      PKG_HASH: "61/67/1a654b96309c991762ee9bc39c363fc618076b155fe52d295211cf2536c7"
+      PKG_EXT: "tar.gz"
+      CIBW_ARCHS: "auto64"
+      CIBW_BEFORE_ALL: "apk update && apk add lapack-dev blas-dev"
+    strategy:
+      matrix:
+        cibw_build: ['cp37-musllinux', 'cp38-musllinux', 'cp39-musllinux', 'cp310-musllinux']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+
+      - uses: actions/cache@v2
+        id: package-cache
+        with:
+          path: package-cache
+          key: cache-${{ env.PKG_NAME }}-${{ env.PKG_VERSION }}-${{ matrix.cibw_build }}
+
+      - name: Build ${{ matrix.package-name }} ${{ matrix.package-version }}
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        run: bash scripts/download_archive.bash $PKG_NAME $PKG_VERSION $PKG_EXT $PKG_HASH
+
+      - name: Install pipx
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        run: |
+          python3 -m pip install -U pipx
+          python3 -m pipx ensurepath
+
+      - name: Build wheels
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        uses: pypa/cibuildwheel@v2.3.1
+        with:
+          package-dir: ${{ env.PKG_NAME }}-${{ env.PKG_VERSION }}
+          output-dir: package-cache
+        env:
+          CIBW_BUILD: ${{ matrix.cibw_build }}*
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: ./package-cache/*
+
+  scipy-1-7-3-pypy:
+    name: "scipy 1.7.3 ${{ matrix.cibw_build }}"
+    runs-on: ubuntu-latest
+    env:
+      PKG_NAME: "scipy"
+      PKG_VERSION: "1.7.3"
+      PKG_HASH: "61/67/1a654b96309c991762ee9bc39c363fc618076b155fe52d295211cf2536c7"
+      PKG_EXT: "tar.gz"
+      CIBW_ARCHS: "auto64"
+      CIBW_BEFORE_ALL: "yum update && yum install lapack-devel blas-devel"
+    strategy:
+      matrix:
+        cibw_build: ['pp37', 'pp38']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+
+      - uses: actions/cache@v2
+        id: package-cache
+        with:
+          path: package-cache
+          key: cache-${{ env.PKG_NAME }}-${{ env.PKG_VERSION }}-${{ matrix.cibw_build }}
+
+      - name: Build ${{ matrix.package-name }} ${{ matrix.package-version }}
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        run: bash scripts/download_archive.bash $PKG_NAME $PKG_VERSION $PKG_EXT $PKG_HASH
+
+      - name: Install pipx
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        run: |
+          python3 -m pip install -U pipx
+          python3 -m pipx ensurepath
+
+      - name: Build wheels
+        if: steps.package-cache.outputs.cache-hit != 'true'
+        uses: pypa/cibuildwheel@v2.3.1
+        with:
+          package-dir: ${{ env.PKG_NAME }}-${{ env.PKG_VERSION }}
+          output-dir: package-cache
+        env:
+          CIBW_BUILD: ${{ matrix.cibw_build }}*
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: ./package-cache/*
